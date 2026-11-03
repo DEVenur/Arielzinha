@@ -958,7 +958,7 @@ class BotPool:
 
             self.node_check(LAVALINK_SERVERS, start_local=start_local)
 
-        if self.config["RUN_RPC_SERVER"]:
+        if self.config["RUN_RPC_SERVER"] or self.config["RUN_ACTIVITY_SERVER"]:
 
             self.cache_updater_task = self.loop.create_task(self.cache_updater())
 

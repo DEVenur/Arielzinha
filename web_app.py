@@ -429,20 +429,31 @@ def run_app(pool: BotPool, message: str = "", config: dict = None):
         except IndexError:
             pass
 
-    app = tornado.web.Application([
-        (r'/', IndexHandler, {'pool': pool, 'message': message, 'config': config}),
-        (r'/ws', WebSocketHandler),
-        # Discord Activity: rotas independentes; o RPC acima permanece inalterado.
-        (r'/activity', ActivityIndexHandler),
-        (r'/activity/', ActivityIndexHandler),
-        (r'/activity/api/auth', ActivityAuthHandler),
-        (r'/activity/api/state', ActivityStateHandler, {'pool': pool}),
-        (r'/activity/api/control', ActivityControlHandler, {'pool': pool}),
-        (r'/activity/(.*)', tornado.web.StaticFileHandler, {
-            'path': 'activity/frontend',
-            'default_filename': 'index.html',
-        }),
-    ], cookie_secret=environ.get("ACTIVITY_SESSION_SECRET"))
+    handlers = []
+
+    if config.get("RUN_RPC_SERVER", False):
+        handlers.extend([
+            (r'/', IndexHandler, {'pool': pool, 'message': message, 'config': config}),
+            (r'/ws', WebSocketHandler),
+        ])
+
+    if config.get("RUN_ACTIVITY_SERVER", False):
+        handlers.extend([
+            (r'/activity', ActivityIndexHandler),
+            (r'/activity/', ActivityIndexHandler),
+            (r'/activity/api/auth', ActivityAuthHandler),
+            (r'/activity/api/state', ActivityStateHandler, {'pool': pool}),
+            (r'/activity/api/control', ActivityControlHandler, {'pool': pool}),
+            (r'/activity/(.*)', tornado.web.StaticFileHandler, {
+                'path': 'activity/frontend',
+                'default_filename': 'index.html',
+            }),
+        ])
+
+    app = tornado.web.Application(
+        handlers,
+        cookie_secret=environ.get("ACTIVITY_SESSION_SECRET"),
+    )
 
     app.listen(port=config.get("PORT") or environ.get("PORT", 80))
 

@@ -84,6 +84,7 @@ DEFAULT_CONFIG = {
     ### Sistema de música - RPC (Rich Presence): ###
     ################################################
     "RUN_RPC_SERVER": True,
+    "RUN_ACTIVITY_SERVER": False,
     "RPC_SERVER": "ws://localhost:$PORT/ws",
     "PORT": None,
     "RPC_PUBLIC_URL": "",
@@ -237,6 +238,7 @@ def load_config():
         "CONNECT_LOCAL_LAVALINK",
         "COMMAND_LOG",
         "RUN_RPC_SERVER",
+        "RUN_ACTIVITY_SERVER",
         "ENABLE_RPC_COMMAND",
         "ENABLE_RPC_AUTH",
         "AUTO_DOWNLOAD_LAVALINK_SERVERLIST",

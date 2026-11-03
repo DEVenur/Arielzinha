@@ -1,11 +1,12 @@
 # Web Player — Discord Activity
 
-A Activity é servida em `/activity/` pelo mesmo servidor HTTP do projeto. As rotas RPC existentes (`/` e `/ws`) são preservadas.
+A Activity é servida em `/activity/` pelo servidor HTTP do projeto. Ative `RUN_ACTIVITY_SERVER=true`; ela funciona independentemente de `RUN_RPC_SERVER`, que continua controlando exclusivamente as rotas `/` e `/ws` do RPC.
 
 ## Configuração
 
 Defina estas variáveis no ambiente do bot:
 
+- `RUN_ACTIVITY_SERVER=true`: habilita o servidor da Activity sem ativar o RPC.
 - `DISCORD_CLIENT_ID`: Application ID da aplicação Discord configurada para a Activity.
 - `DISCORD_CLIENT_SECRET`: OAuth2 Client Secret dessa aplicação. Mantenha-o apenas no backend.
 - `ACTIVITY_SESSION_SECRET`: segredo aleatório persistente para assinar o cookie de sessão. Gere com `python -c "import secrets; print(secrets.token_urlsafe(48))"`.
