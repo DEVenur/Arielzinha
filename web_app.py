@@ -17,6 +17,8 @@ from packaging import version
 
 from config_loader import load_config
 
+from activity.handlers import ActivityAuthHandler, ActivityIndexHandler, ActivityStateHandler
+
 if TYPE_CHECKING:
     from utils.client import BotPool
 
@@ -430,7 +432,16 @@ def run_app(pool: BotPool, message: str = "", config: dict = None):
     app = tornado.web.Application([
         (r'/', IndexHandler, {'pool': pool, 'message': message, 'config': config}),
         (r'/ws', WebSocketHandler),
-    ])
+        # Discord Activity: rotas independentes; o RPC acima permanece inalterado.
+        (r'/activity', ActivityIndexHandler),
+        (r'/activity/', ActivityIndexHandler),
+        (r'/activity/api/auth', ActivityAuthHandler),
+        (r'/activity/api/state', ActivityStateHandler, {'pool': pool}),
+        (r'/activity/(.*)', tornado.web.StaticFileHandler, {
+            'path': 'activity/frontend',
+            'default_filename': 'index.html',
+        }),
+    ], cookie_secret=environ.get("ACTIVITY_SESSION_SECRET"))
 
     app.listen(port=config.get("PORT") or environ.get("PORT", 80))
 

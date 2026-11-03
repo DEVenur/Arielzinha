@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="pt-BR" data-client-id="__DISCORD_CLIENT_ID__">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#171821">
+  <title>Arielzinha — Web Player</title>
+  <link rel="stylesheet" href="/activity/style.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark">A</span><div><strong>Arielzinha</strong><small>WEB PLAYER</small></div></div>
+      <div id="profile" class="profile hidden"></div>
+    </header>
+    <section id="status" class="status">
+      <div class="loader"></div>
+      <p>Conectando ao Discord…</p>
+    </section>
+    <section id="content" class="hidden">
+      <div class="section-heading"><div><span class="eyebrow">SUA MÚSICA</span><h1>Servidores</h1></div><button id="refresh" class="secondary">Atualizar</button></div>
+      <div id="guilds" class="guild-grid"></div>
+      <p id="empty" class="empty hidden">Nenhum servidor compartilhado com os bots foi encontrado.</p>
+    </section>
+    <footer>Web Player · Arielzinha</footer>
+  </main>
+  <script type="module" src="/activity/app.js"></script>
+</body>
+</html>
