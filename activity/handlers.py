@@ -192,6 +192,11 @@ class ActivityStateHandler(tornado.web.RequestHandler):
                     "position": int(getattr(player, "position", 0) or 0),
                     "volume": int(getattr(player, "volume", 100) or 0),
                     "queue_length": len(getattr(player, "queue", ())),
+                    "queue": [{
+                        "title": str(getattr(queued, "title", "Desconhecida")),
+                        "author": str(getattr(queued, "author", "")),
+                        "duration": int(getattr(queued, "duration", 0) or 0),
+                    } for queued in list(getattr(player, "queue", ()))[:10]],
                     "track": ({
                         "title": str(getattr(track, "title", "Desconhecida")),
                         "author": str(getattr(track, "author", "")),
@@ -292,6 +297,19 @@ class ActivityControlHandler(tornado.web.RequestHandler):
                 if value > duration:
                     return _json(self, {"error": "Posição fora da duração da faixa."}, 400)
                 await player.seek(value)
+
+            elif action == "skip":
+                if getattr(player, "current", None) is None:
+                    return _json(self, {"error": "Não há faixa em reprodução."}, 409)
+                if player.loop == "current":
+                    player.loop = False
+                try:
+                    (player.current or player.last_track).info["extra"]["track_loops"] = 0
+                except (AttributeError, KeyError, TypeError):
+                    pass
+                await player.track_end(ignore_track_loop=True)
+                player.ignore_np_once = True
+                await player.process_next()
 
             elif action == "volume":
                 value = data.get("value")

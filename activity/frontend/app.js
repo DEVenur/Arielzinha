@@ -95,6 +95,12 @@ function renderGuild(guild) {
     pause.textContent = guild.player.paused ? "Retomar" : "Pausar";
     pause.addEventListener("click", () => sendControl(guild, "pause", !guild.player.paused));
     controls.append(pause);
+    const skip = document.createElement("button");
+    skip.className = "secondary";
+    skip.textContent = "Pular faixa";
+    skip.disabled = !guild.player.queue_length;
+    skip.addEventListener("click", () => sendControl(guild, "skip", null));
+    controls.append(skip);
 
     if (!guild.player.track.is_stream && guild.player.track.duration > 0) {
       const seek = document.createElement("input");
@@ -132,6 +138,19 @@ function renderGuild(guild) {
     queue.textContent = `${guild.player.queue_length} na fila`;
     meta.append(state, queue);
     track.append(meta);
+    if (guild.player.queue?.length) {
+      const queueTitle = document.createElement("div");
+      queueTitle.className = "queue-title";
+      queueTitle.textContent = "A seguir";
+      const queue = document.createElement("ol");
+      queue.className = "queue-list";
+      for (const queued of guild.player.queue) {
+        const entry = document.createElement("li");
+        entry.textContent = queued.author ? queued.title + " — " + queued.author : queued.title;
+        queue.append(entry);
+      }
+      track.append(queueTitle, queue);
+    }
     card.append(track);
   } else {
     const idle = document.createElement("div");
