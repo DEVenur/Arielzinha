@@ -18,6 +18,7 @@ No Discord Developer Portal, configure a URL pública da Activity e habilite os 
 - Troca do código OAuth no backend e validação da identidade com a API do Discord.
 - Cookie de sessão HttpOnly, Secure e SameSite=None; o token OAuth só é devolvido ao SDK no navegador para concluir `authenticate()`.
 - API de leitura dos servidores em comum com os bots e do estado atual dos players.
-- Nenhum comando de reprodução ou streaming é exposto nesta etapa.
+- Controles de pausa/retomada, posição e volume (5–150), limitados a usuários presentes no mesmo canal de voz do bot.
+- Ainda não há skip/fila nem streaming de áudio no navegador.
 
 O streaming não é encaminhado pelo Lavalink nesta implementação. Será necessário projetar uma saída de áudio própria antes de disponibilizar reprodução no navegador.

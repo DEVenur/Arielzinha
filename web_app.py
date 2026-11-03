@@ -17,7 +17,7 @@ from packaging import version
 
 from config_loader import load_config
 
-from activity.handlers import ActivityAuthHandler, ActivityIndexHandler, ActivityStateHandler
+from activity.handlers import ActivityAuthHandler, ActivityControlHandler, ActivityIndexHandler, ActivityStateHandler
 
 if TYPE_CHECKING:
     from utils.client import BotPool
@@ -437,6 +437,7 @@ def run_app(pool: BotPool, message: str = "", config: dict = None):
         (r'/activity/', ActivityIndexHandler),
         (r'/activity/api/auth', ActivityAuthHandler),
         (r'/activity/api/state', ActivityStateHandler, {'pool': pool}),
+        (r'/activity/api/control', ActivityControlHandler, {'pool': pool}),
         (r'/activity/(.*)', tornado.web.StaticFileHandler, {
             'path': 'activity/frontend',
             'default_filename': 'index.html',

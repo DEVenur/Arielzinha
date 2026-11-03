@@ -88,6 +88,42 @@ function renderGuild(guild) {
     author.className = "track-author";
     author.textContent = guild.player.track.author || "Artista desconhecido";
     track.append(title, author);
+    const controls = document.createElement("div");
+    controls.className = "controls";
+    const pause = document.createElement("button");
+    pause.className = "secondary";
+    pause.textContent = guild.player.paused ? "Retomar" : "Pausar";
+    pause.addEventListener("click", () => sendControl(guild, "pause", !guild.player.paused));
+    controls.append(pause);
+
+    if (!guild.player.track.is_stream && guild.player.track.duration > 0) {
+      const seek = document.createElement("input");
+      seek.type = "range";
+      seek.min = "0";
+      seek.max = String(guild.player.track.duration);
+      seek.step = "1000";
+      seek.value = String(Math.min(guild.player.position, guild.player.track.duration));
+      seek.setAttribute("aria-label", "Posição da música");
+      seek.addEventListener("change", () => sendControl(guild, "seek", Number(seek.value)));
+      controls.append(seek);
+    }
+
+    const volume = document.createElement("input");
+    volume.type = "range";
+    volume.min = "5";
+    volume.max = "150";
+    volume.step = "5";
+    volume.value = String(guild.player.volume);
+    volume.setAttribute("aria-label", "Volume");
+    volume.addEventListener("change", () => sendControl(guild, "volume", Number(volume.value)));
+    controls.append(volume);
+
+    const hint = document.createElement("small");
+    hint.className = "control-hint";
+    hint.textContent = "Entre no canal de voz do bot para usar os controles.";
+    controls.append(hint);
+    track.append(controls);
+
     const meta = document.createElement("div");
     meta.className = "player-meta";
     const state = document.createElement("span");
@@ -104,6 +140,27 @@ function renderGuild(guild) {
     card.append(idle);
   }
   return card;
+}
+
+async function sendControl(guild, action, value) {
+  try {
+    const response = await fetch("/activity/api/control", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
+      body: JSON.stringify({
+        guild_id: guild.id,
+        bot_id: guild.player.bot_id,
+        action,
+        value,
+      }),
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || "Controle não aplicado.");
+    await loadState();
+  } catch (error) {
+    showError(error?.message || "Falha ao controlar o player.", true);
+  }
 }
 
 async function loadState() {
